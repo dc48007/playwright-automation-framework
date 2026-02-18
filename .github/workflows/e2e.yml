@@ -1,0 +1,45 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services: {}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Start official Playwright MCP server (npx)
+        run: |
+          npx @playwright/mcp@latest --port 8931 --headless &
+          npx wait-on http://localhost:8931/status
+        env:
+          CI: true
+
+      - name: Run Playwright tests
+        run: |
+          # Tell tests where the MCP server is available
+          export PLAYWRIGHT_MCP_URL=http://127.0.0.1:8931/mcp
+          npx playwright test --workers=1
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report

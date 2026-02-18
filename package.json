@@ -1,0 +1,27 @@
+{
+  "name": "playwright-automation-framework",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "install:browsers": "npx playwright install",
+    "mcp-server": "node src/mcp-server/index.js",
+    "test:e2e": "start-server-and-test 'npm run mcp-server' http-get://localhost:4000/status 'npx playwright test tests/mcp.spec.js'",
+    "ci": "npx playwright test --reporter=list",
+    "clean": "rimraf node_modules package-lock.json playwright-report"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@playwright/mcp": "^0.1.0",
+    "rimraf": "^3.0.2",
+    "start-server-and-test": "^2.1.3"
+  }
+}
